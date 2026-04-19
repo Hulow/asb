@@ -15,7 +15,7 @@ export abstract class BaseConsumer {
     async consume() {
         this.channel.consume(this.queueName, async(msg: any)=> {
             try {  
-                this.handle(msg);
+                await this.handle(msg);
                 this.channel.ack(msg)
 
             } catch(err) {
