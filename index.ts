@@ -1,47 +1,23 @@
-import amqp from "amqplib";
-
-class Broker {
-    private connection!: amqp.ChannelModel;
-    private channel!: amqp.Channel;
-    private queueName!: string;
-
-    constructor(queueName: string) {
-        this.queueName = queueName;
-    }
-
-    async init() {
-        this.connection = await amqp.connect("amqp://admin:admin@localhost:5672");
-        this.channel = await this.connection.createChannel();
-
-        await this.channel.assertQueue(this.queueName, {
-            durable: true,
-        });
-    }
-
-    sendMsg(msg: string) {
-        this.channel.sendToQueue(
-            this.queueName,
-            Buffer.from(msg)
-        );
-    }
-
-    consume() {
-        this.channel.consume(this.queueName, (msg) => {
-            if (msg) {
-                console.log("Received:", msg.content.toString());
-                this.channel.ack(msg);
-            }
-        });
-    }
-}
+import { RabbitMQConnection } from "./src/shared/messaging/Connection";
+import { Consumer } from "./src/pixel/adapters/messaging/Consumer";
+import { Producer } from "./src/pixel/adapters/messaging/Producer";
+import { config } from "./src/config"
 
 async function main() {
-    const broker = new Broker("test-queue");
+    const queueName = 'new-queue';
 
-    await broker.init();
+    const connection = new RabbitMQConnection(config);
+    await connection.init();
+    await connection.addQueue(queueName);
+    
+    const channel = connection.getChannel();
+    const consumer = new Consumer(channel, queueName);
 
-    broker.consume(); 
-    broker.sendMsg("ddd");
+     const producer = new Producer(channel, queueName);
+    await producer.producePixel('msg pusblished from pixel');
+
+    await consumer.consume()
+
 }
 
 main().catch(console.error);
