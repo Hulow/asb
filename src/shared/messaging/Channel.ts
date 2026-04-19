@@ -15,10 +15,35 @@ export class Channel {
         this.channel = await this.connection.createChannel();
     }
 
-    async addQueue(queueName: string): Promise<void> {
-        this.channel.assertQueue(queueName, {
-            durable: true,
-        })
+    async purgeQueue() {
+        await this.channel.purgeQueue('pixelQueue')
+    }
+
+    async addExchange(): Promise<void> {
+        await this.channel.assertExchange(
+            "pixel", 
+            "topic", 
+            {
+                durable: true,
+            }
+        )
+    }
+
+    async addQueue(): Promise<void> {
+        await this.channel.assertQueue(
+            "pixelQueue",
+            {
+                durable: true
+            }
+        )
+    }
+
+    async bindQueue(): Promise<void> {
+        await this.channel.bindQueue(
+            'pixelQueue',
+            "pixel", 
+            "pixel.created"
+        );
     }
 
     getChannel(): amqp.Channel {

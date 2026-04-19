@@ -2,16 +2,15 @@ import amqp from "amqplib";
 
 export abstract class BaseProducer {
     protected channel: amqp.Channel;
-    protected queueName: string;
 
-    constructor(channel: amqp.Channel, queueName: string) {
+    constructor(channel: amqp.Channel) {
         this.channel = channel;
-        this.queueName = queueName
     }
     
-    protected publish(msg: string) {
-        this.channel.sendToQueue(
-            this.queueName,
+    protected publish(router: string, routingKey: string, msg: string) {
+        this.channel.publish(
+            router,
+            routingKey,
             Buffer.from(msg)
         );
     }

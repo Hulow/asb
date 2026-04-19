@@ -13,7 +13,8 @@ export abstract class BaseConsumer {
     abstract handle(msg: ConsumeMessage): Promise<void>
 
     async consume() {
-        this.channel.consume(this.queueName, async(msg: any)=> {
+        await this.channel.consume(this.queueName, async(msg: any)=> {
+            if (!msg) return;
             try {  
                 await this.handle(msg);
                 this.channel.ack(msg)
