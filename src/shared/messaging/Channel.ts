@@ -1,7 +1,7 @@
 import amqp from "amqplib";
 import { Config } from "../../config"
 
-export class RabbitMQConnection {
+export class Channel {
     private connection!: amqp.ChannelModel;
     private channel!: amqp.Channel;
     private config: Config

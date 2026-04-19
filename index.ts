@@ -1,4 +1,4 @@
-import { RabbitMQConnection } from "./src/shared/messaging/Connection";
+import { Channel } from "./src/shared/messaging/Channel";
 import { Consumer } from "./src/pixel/adapters/messaging/Consumer";
 import { Producer } from "./src/pixel/adapters/messaging/Producer";
 import { config } from "./src/config"
@@ -6,7 +6,7 @@ import { config } from "./src/config"
 async function main() {
     const queueName = 'new-queue';
 
-    const connection = new RabbitMQConnection(config);
+    const connection = new Channel(config);
     await connection.init();
     await connection.addQueue(queueName);
     
