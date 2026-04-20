@@ -8,7 +8,6 @@ async function main() {
 
     const connection = new Channel(config);
     await connection.init();
-    await connection.purgeQueue();
     await connection.addExchange();
     await connection.addQueue();
     await connection.bindQueue();
